@@ -1,0 +1,19 @@
+#@ load("@ytt:data", "data")
+
+#@ if/end data.values.type in ["flux-kustomization"]:
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: #@ data.values.name
+  namespace: #@ data.values.namespace
+  labels:
+    app.kubernetes.io/component: gitops-configurer
+spec:
+  interval: 1m0s
+  url: #@ data.values.git.url
+  ref:
+    branch: #@ data.values.git.branch
+  #@ if/end data.values.git.secret_name != "":
+  secretRef:
+    name: #@ data.values.git.secret_name

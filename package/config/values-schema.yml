@@ -1,0 +1,29 @@
+#@data/values-schema
+---
+
+#@schema/desc "The namespace where the GitOps resource should be installed."
+namespace: kadras-system
+
+#@schema/desc "The name of the GitOps resource."
+name: gitops-configurer
+
+#@schema/desc "The type of GitOps controller to use. Options: `carvel-app`, `flux-kustomization`."
+#@schema/validation one_of=["carvel-app", "flux-kustomization"]
+type: carvel-app
+
+#@schema/desc "The `ServiceAccount` used by the GitOps controller to reconcile changes to the cluster."
+service_account: ""
+
+#@schema/desc "Configuration for synchronizing changes from Git."
+git:
+  #@schema/desc "The URL of the Git repository to synchronize in the cluster."
+  url: ""
+  #@schema/desc "The Git branch to check out and synchronize."
+  branch: main
+  #@schema/desc "The path within the Git repository containing the manifests to reconcile with the cluster."
+  path: ""
+  #@schema/desc "The name of the Secret in the same namespace holding the credentials to access the Git server. The credentials should provide read-only access to the Git server."
+  secret_name: ""
+
+#@schema/desc "The interval at which the GitOps controller should synchronize changes from Git. The format is a Go duration string. Example: `1m0s`."
+sync_period: "1m0s"

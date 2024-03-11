@@ -1,0 +1,29 @@
+#@ load("@ytt:data", "data")
+
+#@ if/end data.values.type == "carvel-app":
+---
+apiVersion: kappctrl.k14s.io/v1alpha1
+kind: App
+metadata:
+  name: #@ data.values.name
+  namespace: #@ data.values.namespace
+  labels:
+    app.kadras.io/component: gitops-configurer
+spec:
+  serviceAccountName: #@ data.values.service_account
+  syncPeriod: #@ data.values.sync_period
+  fetch:
+    - git:
+        url: #@ data.values.git.url
+        ref: #@ data.values.git.branch
+        #@ if/end data.values.git.secret_name != "":
+        secretRef:
+          name: #@ data.values.git.secret_name
+        #@ if/end data.values.git.path != "":
+        subPath: #@ data.values.git.path
+  template:
+    - ytt:
+        ignoreUnknownComments: true
+    - kbld: {}
+  deploy:
+    - kapp: {}

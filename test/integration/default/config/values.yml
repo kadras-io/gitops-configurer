@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gitops-configurer-values
+  namespace: tests
+stringData:
+  values.yaml: |
+    namespace: tests
+    type: flux-kustomization
+    git:
+      url: "https://github.com/stefanprodan/podinfo"
+      branch: "master"
+      path: "kustomize"

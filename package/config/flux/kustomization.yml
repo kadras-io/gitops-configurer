@@ -1,0 +1,23 @@
+#@ load("@ytt:data", "data")
+
+#@ if/end data.values.type == "flux-kustomization":
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: #@ data.values.name
+  namespace: #@ data.values.namespace
+  labels:
+    app.kubernetes.io/component: gitops-configurer
+spec:
+  #@ if/end data.values.service_account != "":
+  serviceAccountName: #@ data.values.service_account
+  interval: #@ data.values.sync_period
+  sourceRef:
+    kind: GitRepository
+    name: #@ data.values.name
+  #@ if/end data.values.git.path != "":
+  path: #@ data.values.git.path
+  prune: true
+  wait: true
+  timeout: 1m0s
