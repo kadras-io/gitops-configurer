@@ -13,7 +13,7 @@ Currently, it supports a single-tenant monorepo approach where all Kubernetes ma
 
 ### Prerequisites
 
-* Kubernetes 1.31+
+* Kubernetes 1.32+
 * Carvel [`kctrl`](https://carvel.dev/kapp-controller/docs/latest/install/#installing-kapp-controller-cli-kctrl) CLI.
 * Carvel [kapp-controller](https://carvel.dev/kapp-controller) deployed in your Kubernetes cluster. You can install it with Carvel [`kapp`](https://carvel.dev/kapp/docs/latest/install) (recommended choice) or `kubectl`.
 
