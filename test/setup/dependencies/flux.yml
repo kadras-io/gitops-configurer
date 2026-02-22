@@ -12,4 +12,4 @@ spec:
   packageRef:
     refName: flux.packages.kadras.io
     versionSelection:
-      constraints: 2.7.5
+      constraints: 2.7.5+kadras.1
