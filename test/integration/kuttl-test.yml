@@ -17,8 +17,8 @@ commands:
   - script: |
       kubectl config set-context --current --namespace=tests && \
       kapp deploy -a flux-package -y \
-        -f https://github.com/kadras-io/package-for-flux/releases/download/v2.8.2/package.yml \
-        -f https://github.com/kadras-io/package-for-flux/releases/download/v2.8.2/metadata.yml
+        -f https://github.com/kadras-io/package-for-flux/releases/download/v2.8.8/package.yml \
+        -f https://github.com/kadras-io/package-for-flux/releases/download/v2.8.8/metadata.yml
   - script: |
       kubectl config set-context --current --namespace=tests && \
       kapp deploy -a dependencies -y -f ./test/setup/dependencies
