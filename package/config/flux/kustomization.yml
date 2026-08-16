@@ -1,6 +1,14 @@
 #@ load("@ytt:data", "data")
 
-#@ if/end data.values.type == "flux-kustomization":
+#@ def source_kind():
+#@   return "GitRepository" if data.values.type == "flux-kustomization" else "OCIRepository"
+#@ end
+
+#@ def source_path():
+#@   return data.values.git.path if data.values.type == "flux-kustomization" else data.values.oci.path
+#@ end
+
+#@ if/end data.values.type in ["flux-kustomization", "flux-oci-kustomization"]:
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -14,10 +22,10 @@ spec:
   serviceAccountName: #@ data.values.service_account
   interval: #@ data.values.sync_period
   sourceRef:
-    kind: GitRepository
+    kind: #@ source_kind()
     name: #@ data.values.name
-  #@ if/end data.values.git.path != "":
-  path: #@ data.values.git.path
+  #@ if/end source_path() != "":
+  path: #@ source_path()
   prune: true
   wait: true
   timeout: 1m0s

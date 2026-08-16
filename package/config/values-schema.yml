@@ -7,8 +7,8 @@ namespace: kadras-system
 #@schema/desc "The name of the GitOps resource."
 name: gitops-configurer
 
-#@schema/desc "The type of GitOps controller to use. Options: `carvel-app`, `flux-kustomization`."
-#@schema/validation one_of=["carvel-app", "flux-kustomization"]
+#@schema/desc "The type of GitOps controller to use. Options: `carvel-app`, `flux-kustomization`, `flux-oci-kustomization`."
+#@schema/validation one_of=["carvel-app", "flux-kustomization", "flux-oci-kustomization"]
 type: carvel-app
 
 #@schema/desc "The `ServiceAccount` used by the GitOps controller to reconcile changes to the cluster."
@@ -24,6 +24,26 @@ git:
   path: ""
   #@schema/desc "The name of the Secret in the same namespace holding the credentials to access the Git server. The credentials should provide read-only access to the Git server."
   secret_name: ""
+
+#@schema/desc "Configuration for synchronizing changes from an OCI registry."
+oci:
+  #@schema/desc "The URL of the OCI artifact to synchronize in the cluster. It must use the `oci://` scheme. Example: `oci://ghcr.io/kadras-io/my-gitops-artifact`."
+  url: ""
+  #@schema/desc "The OCI artifact tag to pull and synchronize. Ignored when either `oci.semver` or `oci.digest` is configured."
+  tag: latest
+  #@schema/desc "The semver range used to select which OCI artifact tag to pull and synchronize. Example: `1.x`. Ignored when `oci.digest` is configured."
+  semver: ""
+  #@schema/desc "The digest of the OCI artifact to pull and synchronize. Example: `sha256:5f2f...`. It takes precedence over `oci.tag` and `oci.semver`."
+  digest: ""
+  #@schema/desc "The path within the OCI artifact containing the manifests to reconcile with the cluster."
+  path: ""
+  #@schema/desc "The name of the Secret in the same namespace holding the credentials to access the OCI registry. The credentials should provide read-only access to the OCI registry."
+  secret_name: ""
+  #@schema/desc "The provider used for authenticating with the OCI registry. Use `generic` for static credentials via `oci.secret_name`, or a cloud provider for workload identity. Options: `generic`, `aws`, `azure`, `gcp`."
+  #@schema/validation one_of=["generic", "aws", "azure", "gcp"]
+  provider: generic
+  #@schema/desc "The name of the ServiceAccount in the same namespace used to authenticate with the OCI registry. With the `generic` provider, its image pull secrets are used. With a cloud provider, it is used for workload identity."
+  service_account: ""
 
 #@schema/desc "The interval at which the GitOps controller should synchronize changes from Git. The format is a Go duration string. Example: `1m0s`."
 sync_period: "1m0s"

@@ -7,7 +7,15 @@
 [![Follow us on Bluesky](https://img.shields.io/static/v1?label=Bluesky&message=Follow&color=1DA1F2)](https://bsky.app/profile/kadras.bsky.social)
 
 A Carvel package providing GitOps configuration (Carvel or Flux) for the Kadras Engineering Platform.
-Currently, it supports a single-tenant monorepo approach where all Kubernetes manifests are stored in a single Git repository.
+Currently, it supports a single-tenant monorepo approach where all Kubernetes manifests are stored in a single Git repository or packaged as a single OCI artifact.
+
+Three setups are available via the `type` configuration value:
+
+| `type` | Resources | Source |
+|--------|-----------|--------|
+| `carvel-app` | Carvel `App` | Git |
+| `flux-kustomization` | Flux `GitRepository` + `Kustomization` | Git |
+| `flux-oci-kustomization` | Flux `OCIRepository` + `Kustomization` | OCI registry |
 
 ## 🚀&nbsp; Getting Started
 
@@ -101,12 +109,20 @@ The GitOps Configurer package has the following configurable properties.
 |-------|-------------------|-------------|
 | `namespace` | `kadras-system` | The namespace where the GitOps resource should be installed. |
 | `name` | `gitops-configurer` | The name of the GitOps resource. |
-| `type` | `carvel-app` | The type of GitOps controller to use. Options: `carvel-app`, `flux-kustomization`. |
+| `type` | `carvel-app` | The type of GitOps controller to use. Options: `carvel-app`, `flux-kustomization`, `flux-oci-kustomization`. |
 | `service_account` | `""` | The `ServiceAccount` used by the GitOps controller to reconcile changes to the cluster. |
 | `git.url` | `""` | The URL of the Git repository to synchronize in the cluster. |
 | `git.branch` | `main` | The Git branch to check out and synchronize. |
 | `git.path` | `""` | The path within the Git repository containing the manifests to reconcile with the cluster. |
 | `git.secret_name` | `""` | The name of the Secret in the same namespace holding the credentials to access the Git server. The credentials should provide read-only access to the Git server. |
+| `oci.url` | `""` | The URL of the OCI artifact to synchronize in the cluster. It must use the `oci://` scheme. Example: `oci://ghcr.io/kadras-io/my-gitops-artifact`. |
+| `oci.tag` | `latest` | The OCI artifact tag to pull and synchronize. Ignored when either `oci.semver` or `oci.digest` is configured. |
+| `oci.semver` | `""` | The semver range used to select which OCI artifact tag to pull and synchronize. Example: `1.x`. Ignored when `oci.digest` is configured. |
+| `oci.digest` | `""` | The digest of the OCI artifact to pull and synchronize. Example: `sha256:5f2f...`. It takes precedence over `oci.tag` and `oci.semver`. |
+| `oci.path` | `""` | The path within the OCI artifact containing the manifests to reconcile with the cluster. |
+| `oci.secret_name` | `""` | The name of the Secret in the same namespace holding the credentials to access the OCI registry. The credentials should provide read-only access to the OCI registry. |
+| `oci.provider` | `generic` | The provider used for authenticating with the OCI registry. Use `generic` for static credentials via `oci.secret_name`, or a cloud provider for workload identity. Options: `generic`, `aws`, `azure`, `gcp`. |
+| `oci.service_account` | `""` | The name of the ServiceAccount in the same namespace used to authenticate with the OCI registry. With the `generic` provider, its image pull secrets are used. With a cloud provider, it is used for workload identity. |
 | `sync_period` | `1m0s` | The interval at which the GitOps controller should synchronize changes from Git. The format is a Go duration string. Example: `1m0s`. |
 
 </details>

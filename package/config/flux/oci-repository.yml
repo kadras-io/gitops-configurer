@@ -1,0 +1,28 @@
+#@ load("@ytt:data", "data")
+
+#@ if/end data.values.type in ["flux-oci-kustomization"]:
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: #@ data.values.name
+  namespace: #@ data.values.namespace
+  labels:
+    app.kubernetes.io/component: gitops-configurer
+spec:
+  interval: 1m0s
+  url: #@ data.values.oci.url
+  provider: #@ data.values.oci.provider
+  ref:
+    #@ if data.values.oci.digest != "":
+    digest: #@ data.values.oci.digest
+    #@ elif data.values.oci.semver != "":
+    semver: #@ data.values.oci.semver
+    #@ else:
+    tag: #@ data.values.oci.tag
+    #@ end
+  #@ if/end data.values.oci.secret_name != "":
+  secretRef:
+    name: #@ data.values.oci.secret_name
+  #@ if/end data.values.oci.service_account != "":
+  serviceAccountName: #@ data.values.oci.service_account
