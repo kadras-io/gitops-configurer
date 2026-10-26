@@ -1,6 +1,7 @@
 controller: carvel
 service_account: gitops-deployer
 interval: 10m
+target_namespace: apps
 git:
   url: https://github.com/kadras-io/my-gitops-repo
   branch: production

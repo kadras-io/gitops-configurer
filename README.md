@@ -96,6 +96,7 @@ With Flux installed, deploy the [podinfo](https://github.com/stefanprodan/podinf
 ```shell
 cat > values.yml <<EOF
 source: oci
+target_namespace: default
 oci:
   url: oci://ghcr.io/stefanprodan/manifests/podinfo
   semver: ">=6.0.0"
@@ -112,7 +113,7 @@ Check that the Kustomization is ready and the application is running:
 
 ```shell
 kubectl get kustomization gitops-configurer -n kadras-system
-kubectl get deployment podinfo -n kadras-system
+kubectl get deployment podinfo -n default
 ```
 
 ## 📙&nbsp; Documentation
@@ -167,6 +168,7 @@ The GitOps Configurer package has the following configurable properties.
 | `name` | `"gitops-configurer"` | The name of the GitOps resources. |
 | `controller` | `"flux"` | The controller reconciling the manifests with the cluster: `carvel` creates a kapp-controller App, `flux` a Flux source and Kustomization. |
 | `service_account` | `""` | The ServiceAccount in the same namespace whose permissions are used to deploy the manifests. Required with the `carvel` controller. With the `flux` controller, the kustomize controller uses its own permissions when empty. |
+| `target_namespace` | `""` | The namespace in which to deploy the manifests, overriding the namespace they set, if any. When empty, the `carvel` controller deploys the manifests without a namespace in the package namespace, while the `flux` controller requires all of them to set one. |
 | `interval` | `"1m0s"` | The interval at which the source is fetched and the manifests reconciled with the cluster, as a Go duration. |
 | `flux.prune` | `true` | Whether to delete the resources removed from the source. It also deletes all the resources applied by the Kustomization when it's deleted, including when uninstalling the package. |
 | `flux.wait` | `true` | Whether to wait for the applied resources to become ready before marking the Kustomization as ready. |

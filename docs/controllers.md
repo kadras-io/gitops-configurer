@@ -20,6 +20,7 @@ flux:
 
 * `interval` sets how often the source is fetched and the manifests applied, even when the source didn't change, which reverts the changes made directly to the cluster.
 * `flux.prune` deletes the resources removed from the source. It also means that deleting the Kustomization, including when uninstalling the package, deletes all the resources it applied. See [upgrade.md](upgrade.md).
+* `target_namespace` deploys all the manifests in the given namespace. Without it, each manifest of a namespaced resource must set its namespace.
 * `flux.wait` makes the Kustomization ready only once all the resources it applied are ready, within `flux.timeout`.
 
 The manifests can be plain Kubernetes resources or a [Kustomize](https://kustomize.io) overlay, with a `kustomization.yaml` file. See [Kustomization](https://fluxcd.io/flux/components/kustomize/kustomizations/).

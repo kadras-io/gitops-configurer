@@ -1,5 +1,5 @@
 ---
-# The GitRepository fetches the manifests, and the Kustomization applies them and waits for them to be ready.
+# The GitRepository fetches the manifests, and the Kustomization applies them: the install step waits for it to be ready.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
@@ -19,11 +19,6 @@ kind: Kustomization
 metadata:
   name: gitops-configurer
   namespace: tests
-status:
-  conditions:
-  - reason: ReconciliationSucceeded
-    status: "True"
-    type: Ready
 ---
 apiVersion: apps/v1
 kind: Deployment

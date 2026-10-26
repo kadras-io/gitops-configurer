@@ -18,6 +18,7 @@ metadata:
 spec:
   interval: 5m
   path: clusters/production
+  targetNamespace: apps
   serviceAccountName: gitops-deployer
   prune: false
   wait: false

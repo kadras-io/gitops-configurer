@@ -23,5 +23,6 @@ spec:
       (paths == null): true
   - kbld: {}
   deploy:
-  - kapp: {}
+  - kapp:
+      intoNs: apps
   (length(fetch)): 1

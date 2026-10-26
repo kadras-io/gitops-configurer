@@ -43,6 +43,10 @@ controller: flux
 #@schema/desc "The ServiceAccount in the same namespace whose permissions are used to deploy the manifests. Required with the `carvel` controller. With the `flux` controller, the kustomize controller uses its own permissions when empty."
 service_account: ""
 
+#@schema/desc "The namespace in which to deploy the manifests, overriding the namespace they set, if any. When empty, the `carvel` controller deploys the manifests without a namespace in the package namespace, while the `flux` controller requires all of them to set one."
+#@schema/validation ("a valid DNS label", lambda v: v == "" or is_dns_label(v))
+target_namespace: ""
+
 #@schema/desc "The interval at which the source is fetched and the manifests reconciled with the cluster, as a Go duration."
 #@schema/validation ("a Go duration, like `1m0s`", is_duration)
 interval: 1m0s

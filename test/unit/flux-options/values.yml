@@ -1,5 +1,6 @@
 service_account: gitops-deployer
 interval: 5m
+target_namespace: apps
 git:
   url: ssh://git@github.com/kadras-io/my-gitops-repo
   branch: production

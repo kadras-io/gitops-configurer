@@ -6,7 +6,7 @@ The package values cover the decisions most installations need to make: the cont
 
 kapp-controller applies the [ytt overlays](https://carvel.dev/ytt/docs/latest/ytt-overlays/) stored in a Secret on top of the package configuration, when the PackageInstall references it with the `ext.packaging.carvel.dev/ytt-paths-from-secret-name.<n>` annotation. See [PackageInstall](https://carvel.dev/kapp-controller/docs/latest/package-install-extensions/).
 
-For example, to apply the manifests to a given namespace and only after another Kustomization is ready:
+For example, to apply the manifests only after another Kustomization is ready:
 
 ```yaml
 apiVersion: v1
@@ -20,8 +20,6 @@ stringData:
     #@overlay/match by=overlay.subset({"kind":"Kustomization", "metadata":{"name":"gitops-configurer"}})
     ---
     spec:
-      #@overlay/match missing_ok=True
-      targetNamespace: apps
       #@overlay/match missing_ok=True
       dependsOn:
         - name: infrastructure

@@ -12,3 +12,5 @@ spec:
         name: registry-credentials
       (tagSelection == null): true
   (template[0].ytt.paths): [config]
+  deploy:
+  - kapp: {}

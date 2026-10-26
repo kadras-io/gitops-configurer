@@ -20,6 +20,8 @@ spec:
     name: #@ data.values.name
   #@ if/end source_path() != "":
   path: #@ source_path()
+  #@ if/end data.values.target_namespace != "":
+  targetNamespace: #@ data.values.target_namespace
   #@ if/end data.values.service_account != "":
   serviceAccountName: #@ data.values.service_account
   prune: #@ data.values.flux.prune
