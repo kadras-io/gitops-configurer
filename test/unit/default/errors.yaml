@@ -2,6 +2,3 @@
 # Only the Flux resources for the Git source are rendered.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
----
-apiVersion: kappctrl.k14s.io/v1alpha1
-kind: App

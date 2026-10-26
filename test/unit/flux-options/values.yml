@@ -6,7 +6,6 @@ git:
   branch: production
   path: clusters/production
   secret_name: git-credentials
-flux:
-  prune: false
-  wait: false
-  timeout: 3m
+prune: false
+wait: false
+timeout: 3m

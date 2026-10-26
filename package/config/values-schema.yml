@@ -8,20 +8,12 @@
 #@   return values["source"] != "oci" or values["oci"]["url"] != ""
 #@ end
 
-#@ def carvel_service_account_set(values):
-#@   return values["controller"] != "carvel" or values["service_account"] != ""
-#@ end
-
-#@ def carvel_oci_auth_supported(values):
-#@   return values["controller"] != "carvel" or (values["oci"]["provider"] == "generic" and values["oci"]["service_account"] == "")
-#@ end
-
 #@ def oci_ref_unambiguous(values):
 #@   return values["oci"]["semver"] == "" or values["oci"]["digest"] == ""
 #@ end
 
 #@data/values-schema
-#@schema/validation ("`git.url` to be set when `source` is `git`", git_url_set), ("`oci.url` to be set when `source` is `oci`", oci_url_set), ("`service_account` to be set when `controller` is `carvel`, since the App deploys the manifests with its permissions", carvel_service_account_set), ("`oci.provider` to be `generic` and `oci.service_account` to be empty when `controller` is `carvel`, since kapp-controller only supports static credentials via `oci.secret_name`", carvel_oci_auth_supported), ("at most one of `oci.semver` and `oci.digest` to be set", oci_ref_unambiguous)
+#@schema/validation ("`git.url` to be set when `source` is `git`", git_url_set), ("`oci.url` to be set when `source` is `oci`", oci_url_set), ("at most one of `oci.semver` and `oci.digest` to be set", oci_ref_unambiguous)
 ---
 
 #@schema/desc "The namespace in which to create the GitOps resources. It must exist."
@@ -33,17 +25,13 @@ namespace: kadras-system
 name: gitops-configurer
 
 #! =============================================
-#! Controller
+#! Reconciliation
 #! =============================================
 
-#@schema/desc "The controller reconciling the manifests with the cluster: `carvel` creates a kapp-controller App, `flux` a Flux source and Kustomization."
-#@schema/validation one_of=["carvel", "flux"]
-controller: flux
-
-#@schema/desc "The ServiceAccount in the same namespace whose permissions are used to deploy the manifests. Required with the `carvel` controller. With the `flux` controller, the kustomize controller uses its own permissions when empty."
+#@schema/desc "The ServiceAccount in the same namespace whose permissions are used to deploy the manifests. When empty, the kustomize controller uses its own permissions."
 service_account: ""
 
-#@schema/desc "The namespace in which to deploy the manifests, overriding the namespace they set, if any. When empty, the `carvel` controller deploys the manifests without a namespace in the package namespace, while the `flux` controller requires all of them to set one."
+#@schema/desc "The namespace in which to deploy the manifests, overriding the namespace they set, if any. When empty, all the manifests of namespaced resources must set one."
 #@schema/validation ("a valid DNS label", lambda v: v == "" or is_dns_label(v))
 target_namespace: ""
 
@@ -51,21 +39,19 @@ target_namespace: ""
 #@schema/validation ("a Go duration, like `1m0s`", is_duration)
 interval: 1m0s
 
-#@schema/desc "Settings for the `flux` controller."
-flux:
-  #@schema/desc "Whether to delete the resources removed from the source. It also deletes all the resources applied by the Kustomization when it's deleted, including when uninstalling the package."
-  prune: true
-  #@schema/desc "Whether to wait for the applied resources to become ready before marking the Kustomization as ready."
-  wait: true
-  #@schema/desc "The timeout for applying the manifests and, with `flux.wait`, for the resources to become ready, as a Go duration."
-  #@schema/validation ("a Go duration, like `1m0s`", is_duration)
-  timeout: 1m0s
+#@schema/desc "Whether to delete the resources removed from the source. It also deletes all the resources applied by the Kustomization when it's deleted, including when uninstalling the package."
+prune: true
+#@schema/desc "Whether to wait for the applied resources to become ready before marking the Kustomization as ready."
+wait: true
+#@schema/desc "The timeout for applying the manifests and, with `wait`, for the resources to become ready, as a Go duration."
+#@schema/validation ("a Go duration, like `1m0s`", is_duration)
+timeout: 1m0s
 
 #! =============================================
 #! Source
 #! =============================================
 
-#@schema/desc "Where the manifests are fetched from: `git` for a Git repository, `oci` for an OCI artifact (a Flux artifact with the `flux` controller, an imgpkg bundle with the `carvel` controller)."
+#@schema/desc "Where the manifests are fetched from: `git` for a Git repository, `oci` for a Flux OCI artifact."
 #@schema/validation one_of=["git", "oci"]
 source: git
 
@@ -79,7 +65,7 @@ git:
   branch: main
   #@schema/desc "The path within the Git repository containing the manifests. The root of the repository when empty."
   path: ""
-  #@schema/desc "The name of the Secret in the same namespace holding the credentials to access the Git repository. See docs/sources.md for the format expected by each controller."
+  #@schema/desc "The name of the Secret in the same namespace holding the credentials to access the Git repository. See docs/sources.md for the expected format."
   secret_name: ""
 
 #@schema/desc "Settings for the `oci` source."
@@ -98,10 +84,10 @@ oci:
   digest: ""
   #@schema/desc "The path within the OCI artifact containing the manifests. The root of the artifact when empty."
   path: ""
-  #@schema/desc "The name of the Secret in the same namespace holding the credentials to access the OCI registry. See docs/sources.md for the format expected by each controller."
+  #@schema/desc "The name of the Secret in the same namespace holding the credentials to access the OCI registry. See docs/sources.md for the expected format."
   secret_name: ""
-  #@schema/desc "The provider used to authenticate with the OCI registry: `generic` for the credentials in `oci.secret_name`, or a cloud provider for workload identity. Cloud providers require the `flux` controller."
+  #@schema/desc "The provider used to authenticate with the OCI registry: `generic` for the credentials in `oci.secret_name`, or a cloud provider for workload identity."
   #@schema/validation one_of=["generic", "aws", "azure", "gcp"]
   provider: generic
-  #@schema/desc "The ServiceAccount in the same namespace used to authenticate with the OCI registry: its image pull secrets with the `generic` provider, its workload identity with a cloud provider. It requires the `flux` controller."
+  #@schema/desc "The ServiceAccount in the same namespace used to authenticate with the OCI registry: its image pull secrets with the `generic` provider, its workload identity with a cloud provider."
   service_account: ""

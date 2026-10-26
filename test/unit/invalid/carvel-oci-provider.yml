@@ -1,7 +1,0 @@
-# expected: `oci.provider` to be `generic` and `oci.service_account` to be empty when `controller` is `carvel`
-controller: carvel
-service_account: gitops-deployer
-source: oci
-oci:
-  url: oci://ghcr.io/kadras-io/my-gitops-bundle
-  provider: gcp

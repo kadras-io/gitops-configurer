@@ -13,7 +13,7 @@ def is_dns_subdomain(value):
   return len(value) <= 253 and regexp.match("^" + _dns_label + "(\\." + _dns_label + ")*$", value)
 end
 
-# A Go duration, like `1m0s` or `1h30m`, as accepted by the Carvel and Flux controllers.
+# A Go duration, like `1m0s` or `1h30m`, as accepted by Flux.
 def is_duration(value):
   return regexp.match("^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$", value)
 end

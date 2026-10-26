@@ -1,8 +1,0 @@
-controller: carvel
-service_account: gitops-deployer
-source: oci
-oci:
-  url: oci://ghcr.io/kadras-io/my-gitops-bundle
-  tag: v1.2.3
-  path: config
-  secret_name: registry-credentials

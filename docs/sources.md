@@ -1,10 +1,10 @@
 # Sources
 
-The manifests are fetched from a Git repository or an OCI artifact, selected via the `source` value. Credentials are referenced by name from a Secret in the package namespace, and the expected format depends on the controller.
+The manifests are fetched from a Git repository or an OCI artifact, selected via the `source` value. Credentials are referenced by name from a Secret in the package namespace.
 
 ## Git
 
-With `source: git` (the default), the controller checks out a branch of the Git repository and reconciles the manifests in a path within it, or its root.
+With `source: git` (the default), Flux checks out a branch of the Git repository and reconciles the manifests in a path within it, or its root.
 
 ```yaml
 source: git
@@ -19,7 +19,7 @@ git:
 
 For a private repository, set `git.secret_name` to a Secret with read-only credentials.
 
-With the `flux` controller, the Secret uses the [GitRepository format](https://fluxcd.io/flux/components/source/gitrepositories/#secret-reference): `username` and `password` for HTTPS, `identity` and `known_hosts` for SSH.
+The Secret uses the [GitRepository format](https://fluxcd.io/flux/components/source/gitrepositories/#secret-reference): `username` and `password` for HTTPS, `identity` and `known_hosts` for SSH.
 
 ```shell
 kubectl create secret generic git-credentials -n kadras-system \
@@ -27,17 +27,9 @@ kubectl create secret generic git-credentials -n kadras-system \
   --from-literal=password=${GITHUB_TOKEN}
 ```
 
-With the `carvel` controller, the Secret uses the [App format](https://carvel.dev/kapp-controller/docs/latest/app-spec/): `username` and `password` for HTTPS, `ssh-privatekey` and `ssh-knownhosts` for SSH.
-
-```shell
-kubectl create secret generic git-credentials -n kadras-system \
-  --from-file=ssh-privatekey=./id_ed25519 \
-  --from-file=ssh-knownhosts=./known_hosts
-```
-
 ## OCI
 
-With `source: oci`, the controller pulls an OCI artifact and reconciles the manifests in a path within it, or its root. The URL uses the `oci://` scheme.
+With `source: oci`, Flux pulls an OCI artifact and reconciles the manifests in a path within it, or its root. The URL uses the `oci://` scheme.
 
 ```yaml
 source: oci
@@ -47,17 +39,14 @@ oci:
   path: clusters/staging
 ```
 
-The format of the artifact depends on the controller:
-
-* With the `flux` controller, a Flux artifact, pushed with [`flux push artifact`](https://fluxcd.io/flux/cheatsheets/oci-artifacts/).
-* With the `carvel` controller, an [imgpkg bundle](https://carvel.dev/imgpkg/docs/latest/resources/#bundle), pushed with `imgpkg push -b`.
+The artifact is a Flux artifact, pushed with [`flux push artifact`](https://fluxcd.io/flux/cheatsheets/oci-artifacts/).
 
 ### Artifact version
 
 The artifact is selected by one of:
 
 * `oci.tag`, `latest` by default.
-* `oci.semver`, a semver range. The controller pulls the highest matching tag, and checks for new tags every `interval`.
+* `oci.semver`, a semver range. Flux pulls the highest matching tag, and checks for new tags every `interval`.
 * `oci.digest`, which pins an immutable version.
 
 `oci.digest` and `oci.semver` take precedence over `oci.tag`, and they can't be set together.
@@ -66,7 +55,7 @@ The artifact is selected by one of:
 
 For a private registry, set `oci.secret_name` to a Secret with read-only credentials.
 
-With the `flux` controller, the Secret is of type `kubernetes.io/dockerconfigjson`.
+The Secret is of type `kubernetes.io/dockerconfigjson`.
 
 ```shell
 kubectl create secret docker-registry registry-credentials -n kadras-system \
@@ -77,17 +66,9 @@ kubectl create secret docker-registry registry-credentials -n kadras-system \
 
 Alternatively, `oci.service_account` uses the image pull secrets of a ServiceAccount.
 
-With the `carvel` controller, the Secret holds the `username` and `password` keys. See [App](https://carvel.dev/kapp-controller/docs/latest/app-spec/) and [private registry authentication](https://carvel.dev/kapp-controller/docs/latest/private-registry-auth/).
-
-```shell
-kubectl create secret generic registry-credentials -n kadras-system \
-  --from-literal=username=${GITHUB_USER} \
-  --from-literal=password=${GITHUB_TOKEN}
-```
-
 ### Workload identity
 
-With the `flux` controller, the OCIRepository can authenticate with the registry of a cloud provider via workload identity instead of static credentials. Set `oci.provider` to `aws`, `azure`, or `gcp`.
+The OCIRepository can authenticate with the registry of a cloud provider via workload identity instead of static credentials. Set `oci.provider` to `aws`, `azure`, or `gcp`.
 
 ```yaml
 source: oci

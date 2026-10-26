@@ -36,16 +36,3 @@ def oci_ref():
   end
   return {"tag": data.values.oci.tag}
 end
-
-# The OCI artifact as an image reference, as expected by kapp-controller: without the `oci://` scheme,
-# and with the tag or the digest. With a semver range, the tag is selected by kapp-controller.
-def oci_image():
-  repository = data.values.oci.url[len("oci://"):]
-  ref = oci_ref()
-  if "digest" in ref:
-    return repository + "@" + ref["digest"]
-  elif "tag" in ref:
-    return repository + ":" + ref["tag"]
-  end
-  return repository
-end

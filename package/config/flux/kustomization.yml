@@ -5,7 +5,6 @@
 #! when set, or the ones of the kustomize controller otherwise.
 #! See: https://fluxcd.io/flux/components/kustomize/kustomizations/
 
-#@ if/end data.values.controller == "flux":
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -24,6 +23,6 @@ spec:
   targetNamespace: #@ data.values.target_namespace
   #@ if/end data.values.service_account != "":
   serviceAccountName: #@ data.values.service_account
-  prune: #@ data.values.flux.prune
-  wait: #@ data.values.flux.wait
-  timeout: #@ data.values.flux.timeout
+  prune: #@ data.values.prune
+  wait: #@ data.values.wait
+  timeout: #@ data.values.timeout

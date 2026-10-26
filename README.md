@@ -6,19 +6,17 @@
 [![The Apache 2.0 license badge](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Follow us on Bluesky](https://img.shields.io/static/v1?label=Bluesky&message=Follow&color=1DA1F2)](https://bsky.app/profile/kadras.bsky.social)
 
-A Carvel package that onboards a cluster to GitOps. It configures [Carvel kapp-controller](https://carvel.dev/kapp-controller) or [Flux](https://fluxcd.io) to keep the cluster in sync with the Kubernetes manifests stored in a Git repository or packaged as an OCI artifact, following a single-tenant monorepo approach.
+A Carvel package that onboards a cluster to GitOps. It configures [Flux](https://fluxcd.io) to keep the cluster in sync with the Kubernetes manifests stored in a Git repository or packaged as an OCI artifact, following a single-tenant monorepo approach.
 
 ## ✨&nbsp; What's Included
 
-* **Two controllers**. The manifests are reconciled either by a kapp-controller `App`, which renders them with ytt and kbld and deploys them with kapp, or by a Flux `Kustomization`.
+* **Flux reconciliation**. The manifests are applied by a Flux `Kustomization`, as plain Kubernetes resources or a Kustomize overlay.
 * **Two sources**. The manifests are fetched from a Git repository or from an OCI artifact, selected by tag, semver range, or digest.
 
-| `controller` | `source` | Resources |
-|--------------|----------|-----------|
-| `flux` (default) | `git` (default) | Flux `GitRepository` and `Kustomization` |
-| `flux` | `oci` | Flux `OCIRepository` and `Kustomization` |
-| `carvel` | `git` | kapp-controller `App` fetching the Git repository |
-| `carvel` | `oci` | kapp-controller `App` fetching an imgpkg bundle |
+| `source` | Resources |
+|----------|-----------|
+| `git` (default) | Flux `GitRepository` and `Kustomization` |
+| `oci` | Flux `OCIRepository` and `Kustomization` |
 
 ## 🚀&nbsp; Getting Started
 
@@ -35,7 +33,7 @@ kapp deploy -a kapp-controller -y \
 
 ### Dependencies
 
-With the `flux` controller, GitOps Configurer requires the Flux source and kustomize controllers. You can install them with the [Flux](https://github.com/kadras-io/package-for-flux) package from the [Kadras package repository](https://github.com/kadras-io/kadras-packages). The `carvel` controller has no dependencies beyond kapp-controller.
+GitOps Configurer requires the Flux source and kustomize controllers. You can install them with the [Flux](https://github.com/kadras-io/package-for-flux) package from the [Kadras package repository](https://github.com/kadras-io/kadras-packages).
 
 ### Installation
 
@@ -119,9 +117,9 @@ kubectl get deployment podinfo -n default
 ## 📙&nbsp; Documentation
 
 Documentation, tutorials and examples for this package are available in the [docs](docs) folder.
-For documentation specific to the controllers, check out [carvel.dev](https://carvel.dev/kapp-controller/docs/latest/) and [fluxcd.io](https://fluxcd.io/flux).
+For documentation specific to Flux, check out [fluxcd.io](https://fluxcd.io/flux).
 
-* [Controllers](docs/controllers.md)
+* [Flux reconciliation and permissions](docs/controllers.md)
 * [Sources and credentials](docs/sources.md)
 * [Configuration and ytt overlays](docs/configuration.md)
 * [Upgrading and uninstalling](docs/upgrade.md)
@@ -132,7 +130,6 @@ For documentation specific to the controllers, check out [carvel.dev](https://ca
 The GitOps Configurer package can be customized via a `values.yml` file.
 
 ```yaml
-controller: flux
 source: git
 interval: 5m
 git:
@@ -166,26 +163,25 @@ The GitOps Configurer package has the following configurable properties.
 |--------|---------|-------------|
 | `namespace` | `"kadras-system"` | The namespace in which to create the GitOps resources. It must exist. |
 | `name` | `"gitops-configurer"` | The name of the GitOps resources. |
-| `controller` | `"flux"` | The controller reconciling the manifests with the cluster: `carvel` creates a kapp-controller App, `flux` a Flux source and Kustomization. |
-| `service_account` | `""` | The ServiceAccount in the same namespace whose permissions are used to deploy the manifests. Required with the `carvel` controller. With the `flux` controller, the kustomize controller uses its own permissions when empty. |
-| `target_namespace` | `""` | The namespace in which to deploy the manifests, overriding the namespace they set, if any. When empty, the `carvel` controller deploys the manifests without a namespace in the package namespace, while the `flux` controller requires all of them to set one. |
+| `service_account` | `""` | The ServiceAccount in the same namespace whose permissions are used to deploy the manifests. When empty, the kustomize controller uses its own permissions. |
+| `target_namespace` | `""` | The namespace in which to deploy the manifests, overriding the namespace they set, if any. When empty, all the manifests of namespaced resources must set one. |
 | `interval` | `"1m0s"` | The interval at which the source is fetched and the manifests reconciled with the cluster, as a Go duration. |
-| `flux.prune` | `true` | Whether to delete the resources removed from the source. It also deletes all the resources applied by the Kustomization when it's deleted, including when uninstalling the package. |
-| `flux.wait` | `true` | Whether to wait for the applied resources to become ready before marking the Kustomization as ready. |
-| `flux.timeout` | `"1m0s"` | The timeout for applying the manifests and, with `flux.wait`, for the resources to become ready, as a Go duration. |
-| `source` | `"git"` | Where the manifests are fetched from: `git` for a Git repository, `oci` for an OCI artifact (a Flux artifact with the `flux` controller, an imgpkg bundle with the `carvel` controller). |
+| `prune` | `true` | Whether to delete the resources removed from the source. It also deletes all the resources applied by the Kustomization when it's deleted, including when uninstalling the package. |
+| `wait` | `true` | Whether to wait for the applied resources to become ready before marking the Kustomization as ready. |
+| `timeout` | `"1m0s"` | The timeout for applying the manifests and, with `wait`, for the resources to become ready, as a Go duration. |
+| `source` | `"git"` | Where the manifests are fetched from: `git` for a Git repository, `oci` for a Flux OCI artifact. |
 | `git.url` | `""` | The URL of the Git repository. Required with the `git` source. |
 | `git.branch` | `"main"` | The Git branch to check out. |
 | `git.path` | `""` | The path within the Git repository containing the manifests. The root of the repository when empty. |
-| `git.secret_name` | `""` | The name of the Secret in the same namespace holding the credentials to access the Git repository. See docs/sources.md for the format expected by each controller. |
+| `git.secret_name` | `""` | The name of the Secret in the same namespace holding the credentials to access the Git repository. See docs/sources.md for the expected format. |
 | `oci.url` | `""` | The URL of the OCI artifact, with the `oci://` scheme. Required with the `oci` source. |
 | `oci.tag` | `"latest"` | The tag of the OCI artifact. Ignored when `oci.semver` or `oci.digest` is set. |
 | `oci.semver` | `""` | The semver range selecting the tag of the OCI artifact, like `1.x` or `>=1.0.0`. The highest matching tag is used. |
 | `oci.digest` | `""` | The digest of the OCI artifact, like `sha256:5f2f...`. It takes precedence over `oci.tag`. |
 | `oci.path` | `""` | The path within the OCI artifact containing the manifests. The root of the artifact when empty. |
-| `oci.secret_name` | `""` | The name of the Secret in the same namespace holding the credentials to access the OCI registry. See docs/sources.md for the format expected by each controller. |
-| `oci.provider` | `"generic"` | The provider used to authenticate with the OCI registry: `generic` for the credentials in `oci.secret_name`, or a cloud provider for workload identity. Cloud providers require the `flux` controller. |
-| `oci.service_account` | `""` | The ServiceAccount in the same namespace used to authenticate with the OCI registry: its image pull secrets with the `generic` provider, its workload identity with a cloud provider. It requires the `flux` controller. |
+| `oci.secret_name` | `""` | The name of the Secret in the same namespace holding the credentials to access the OCI registry. See docs/sources.md for the expected format. |
+| `oci.provider` | `"generic"` | The provider used to authenticate with the OCI registry: `generic` for the credentials in `oci.secret_name`, or a cloud provider for workload identity. |
+| `oci.service_account` | `""` | The ServiceAccount in the same namespace used to authenticate with the OCI registry: its image pull secrets with the `generic` provider, its workload identity with a cloud provider. |
 
 <!-- values-table:end -->
 

@@ -4,7 +4,7 @@
 #! The Flux OCIRepository fetches the manifests from the OCI artifact, for the Kustomization.
 #! See: https://fluxcd.io/flux/components/source/ocirepositories/
 
-#@ if/end data.values.controller == "flux" and is_oci():
+#@ if/end is_oci():
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository

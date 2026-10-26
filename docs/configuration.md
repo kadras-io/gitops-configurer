@@ -1,6 +1,6 @@
 # Configuration
 
-The package values cover the decisions most installations need to make: the controller, the source, and how often to reconcile. Everything else can be customized via ytt overlays applied to the generated resources.
+The package values cover the decisions most installations need to make: the source, how often to reconcile, and how Flux applies the manifests. Everything else can be customized via ytt overlays applied to the generated resources.
 
 ## ytt overlays
 
@@ -32,19 +32,4 @@ kubectl annotate packageinstall gitops-configurer -n kadras-system \
   ext.packaging.carvel.dev/ytt-paths-from-secret-name.0=gitops-configurer-overlays
 ```
 
-The generated resources are named after `name`, in the `namespace` of the values: an `App`, or a `GitRepository` or `OCIRepository` and a `Kustomization`. See [controllers.md](controllers.md).
-
-### Keeping the workloads on deletion
-
-For example, to keep the resources deployed by the Carvel App when it's deleted, including when uninstalling the package:
-
-```yaml
-#@ load("@ytt:overlay", "overlay")
-#@overlay/match by=overlay.subset({"kind":"App", "metadata":{"name":"gitops-configurer"}})
----
-spec:
-  #@overlay/match missing_ok=True
-  noopDelete: true
-```
-
-With the Flux controller, set `flux.prune: false` instead. See [upgrade.md](upgrade.md).
+The generated resources are named after `name`, in the `namespace` of the values: a `GitRepository` or `OCIRepository` and a `Kustomization`. See [controllers.md](controllers.md).

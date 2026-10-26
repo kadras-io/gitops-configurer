@@ -1,6 +1,0 @@
-controller: carvel
-service_account: gitops-deployer
-source: oci
-oci:
-  url: oci://ghcr.io/kadras-io/my-gitops-bundle
-  semver: 1.x

@@ -4,7 +4,7 @@
 #! The Flux GitRepository fetches the manifests from the Git repository, for the Kustomization.
 #! See: https://fluxcd.io/flux/components/source/gitrepositories/
 
-#@ if/end data.values.controller == "flux" and is_git():
+#@ if/end is_git():
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository

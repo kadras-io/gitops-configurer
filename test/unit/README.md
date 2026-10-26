@@ -15,19 +15,17 @@ The rendered manifests are also validated with kubeconform, against the Kubernet
 The documents in `assert.yaml` and `errors.yaml` use the [Chainsaw assertion syntax](https://kyverno.github.io/chainsaw/latest/quick-start/assertion-trees/), the same used by the cluster tests: partial resources, where the fields that are set must match, plus [JMESPath expressions](https://kyverno.github.io/chainsaw/latest/reference/jp/functions/) in parentheses.
 
 ```yaml
-apiVersion: kappctrl.k14s.io/v1alpha1
-kind: App
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
 metadata:
   name: gitops-configurer
 spec:
-  fetch:
-  - imgpkgBundle:
-      image: ghcr.io/kadras-io/my-gitops-bundle:v1.2.3
-      (tagSelection == null): true
-  (length(fetch)): 1
+  ref:
+    tag: v1.2.3
+    (semver == null): true
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: OCIRepository
+kind: GitRepository
 ```
 
 A document is compared with the rendered resources of the same `apiVersion` and `kind`, narrowed down by `metadata.name` and `metadata.namespace` when it sets them. In `errors.yaml`, a document with only `apiVersion` and `kind` means no resource of that kind at all.

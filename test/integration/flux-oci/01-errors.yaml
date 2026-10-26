@@ -1,5 +1,5 @@
 ---
-# Uninstalling the package deletes the GitOps resources and, since `flux.prune` is enabled, the workloads they applied.
+# Uninstalling the package deletes the GitOps resources and, since `prune` is enabled, the workloads they applied.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
