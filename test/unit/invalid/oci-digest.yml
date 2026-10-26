@@ -1,0 +1,5 @@
+# expected: a digest in the `sha256:<hex>` format
+source: oci
+oci:
+  url: oci://ghcr.io/kadras-io/my-gitops-artifact
+  digest: 9a3b5f2f

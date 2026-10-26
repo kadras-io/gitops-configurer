@@ -1,26 +1,22 @@
 #@ load("@ytt:data", "data")
+#@ load("/lib/gitops.star", "is_oci", "labels", "oci_ref")
 
-#@ if/end data.values.type in ["flux-oci-kustomization"]:
+#! The Flux OCIRepository fetches the manifests from the OCI artifact, for the Kustomization.
+#! See: https://fluxcd.io/flux/components/source/ocirepositories/
+
+#@ if/end data.values.controller == "flux" and is_oci():
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
   name: #@ data.values.name
   namespace: #@ data.values.namespace
-  labels:
-    app.kubernetes.io/component: gitops-configurer
+  labels: #@ labels()
 spec:
-  interval: 1m0s
+  interval: #@ data.values.interval
   url: #@ data.values.oci.url
   provider: #@ data.values.oci.provider
-  ref:
-    #@ if data.values.oci.digest != "":
-    digest: #@ data.values.oci.digest
-    #@ elif data.values.oci.semver != "":
-    semver: #@ data.values.oci.semver
-    #@ else:
-    tag: #@ data.values.oci.tag
-    #@ end
+  ref: #@ oci_ref()
   #@ if/end data.values.oci.secret_name != "":
   secretRef:
     name: #@ data.values.oci.secret_name

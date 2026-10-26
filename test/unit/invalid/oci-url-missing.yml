@@ -1,0 +1,2 @@
+# expected: `oci.url` to be set when `source` is `oci`
+source: oci

@@ -1,0 +1,5 @@
+# expected: a Go duration, like `1m0s`
+flux:
+  timeout: "60"
+git:
+  url: https://github.com/kadras-io/my-gitops-repo

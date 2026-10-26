@@ -1,0 +1,4 @@
+# expected: a URL with the `oci://` scheme
+source: oci
+oci:
+  url: ghcr.io/kadras-io/my-gitops-artifact

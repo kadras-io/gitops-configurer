@@ -1,0 +1,10 @@
+---
+# The semver range takes precedence over the tag, which isn't set.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: gitops-configurer
+spec:
+  ref:
+    semver: ">=1.0.0"
+    (tag == null): true

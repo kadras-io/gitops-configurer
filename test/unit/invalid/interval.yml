@@ -1,0 +1,4 @@
+# expected: a Go duration, like `1m0s`
+interval: 5 minutes
+git:
+  url: https://github.com/kadras-io/my-gitops-repo

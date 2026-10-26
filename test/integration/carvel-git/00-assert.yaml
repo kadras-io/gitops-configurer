@@ -1,0 +1,17 @@
+---
+# The App fetches the manifests from the Git repository, renders them, and deploys them.
+apiVersion: kappctrl.k14s.io/v1alpha1
+kind: App
+metadata:
+  name: gitops-configurer
+  namespace: tests
+status:
+  conditions:
+  - status: "True"
+    type: ReconcileSucceeded
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-app
+  namespace: default

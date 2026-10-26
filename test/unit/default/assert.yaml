@@ -1,0 +1,33 @@
+---
+# With the default values, Flux fetches the main branch of the Git repository and applies its root.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: gitops-configurer
+  namespace: kadras-system
+  labels:
+    app.kubernetes.io/component: gitops-configurer
+spec:
+  interval: 1m0s
+  url: https://github.com/kadras-io/my-gitops-repo
+  ref:
+    branch: main
+  (secretRef == null): true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: gitops-configurer
+  namespace: kadras-system
+  labels:
+    app.kubernetes.io/component: gitops-configurer
+spec:
+  interval: 1m0s
+  sourceRef:
+    kind: GitRepository
+    name: gitops-configurer
+  prune: true
+  wait: true
+  timeout: 1m0s
+  (path == null): true
+  (serviceAccountName == null): true

@@ -1,0 +1,4 @@
+source: oci
+oci:
+  url: oci://ghcr.io/kadras-io/my-gitops-artifact
+  semver: ">=1.0.0"

@@ -1,0 +1,3 @@
+# expected: `git.url` to be set when `source` is `git`
+git:
+  branch: main

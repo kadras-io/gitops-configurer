@@ -1,0 +1,4 @@
+# expected: one of ["carvel", "flux"]
+controller: argo
+git:
+  url: https://github.com/kadras-io/my-gitops-repo

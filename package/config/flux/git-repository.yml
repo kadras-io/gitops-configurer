@@ -1,16 +1,19 @@
 #@ load("@ytt:data", "data")
+#@ load("/lib/gitops.star", "is_git", "labels")
 
-#@ if/end data.values.type in ["flux-kustomization"]:
+#! The Flux GitRepository fetches the manifests from the Git repository, for the Kustomization.
+#! See: https://fluxcd.io/flux/components/source/gitrepositories/
+
+#@ if/end data.values.controller == "flux" and is_git():
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: #@ data.values.name
   namespace: #@ data.values.namespace
-  labels:
-    app.kubernetes.io/component: gitops-configurer
+  labels: #@ labels()
 spec:
-  interval: 1m0s
+  interval: #@ data.values.interval
   url: #@ data.values.git.url
   ref:
     branch: #@ data.values.git.branch

@@ -1,0 +1,4 @@
+# expected: a valid DNS label
+namespace: platform.system
+git:
+  url: https://github.com/kadras-io/my-gitops-repo

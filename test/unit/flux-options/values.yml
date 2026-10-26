@@ -1,0 +1,11 @@
+service_account: gitops-deployer
+interval: 5m
+git:
+  url: ssh://git@github.com/kadras-io/my-gitops-repo
+  branch: production
+  path: clusters/production
+  secret_name: git-credentials
+flux:
+  prune: false
+  wait: false
+  timeout: 3m

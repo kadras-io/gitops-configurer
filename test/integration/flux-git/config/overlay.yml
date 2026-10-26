@@ -1,0 +1,9 @@
+#@ load("@ytt:overlay", "overlay")
+
+#@overlay/match by=overlay.subset({"metadata":{"name":"gitops-configurer"}, "kind":"PackageInstall"})
+---
+spec:
+  #@overlay/match missing_ok=True
+  values:
+    - secretRef:
+        name: gitops-configurer-values

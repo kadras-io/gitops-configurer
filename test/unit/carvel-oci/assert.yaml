@@ -1,0 +1,14 @@
+---
+# The App fetches the imgpkg bundle, without the `oci://` scheme, and renders the manifests in its path.
+apiVersion: kappctrl.k14s.io/v1alpha1
+kind: App
+metadata:
+  name: gitops-configurer
+spec:
+  fetch:
+  - imgpkgBundle:
+      image: ghcr.io/kadras-io/my-gitops-bundle:v1.2.3
+      secretRef:
+        name: registry-credentials
+      (tagSelection == null): true
+  (template[0].ytt.paths): [config]

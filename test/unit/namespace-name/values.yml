@@ -1,0 +1,4 @@
+namespace: platform
+name: cluster.staging
+git:
+  url: https://github.com/kadras-io/my-gitops-repo

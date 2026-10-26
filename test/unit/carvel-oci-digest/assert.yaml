@@ -1,0 +1,10 @@
+---
+apiVersion: kappctrl.k14s.io/v1alpha1
+kind: App
+metadata:
+  name: gitops-configurer
+spec:
+  fetch:
+  - imgpkgBundle:
+      image: ghcr.io/kadras-io/my-gitops-bundle@sha256:9a3b5f2f8e7d6c5b4a39281706f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3
+      (tagSelection == null): true

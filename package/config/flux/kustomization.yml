@@ -1,31 +1,27 @@
 #@ load("@ytt:data", "data")
+#@ load("/lib/gitops.star", "flux_source_kind", "labels", "source_path")
 
-#@ def source_kind():
-#@   return "GitRepository" if data.values.type == "flux-kustomization" else "OCIRepository"
-#@ end
+#! The Flux Kustomization applies the manifests fetched by the source, using the permissions of the ServiceAccount
+#! when set, or the ones of the kustomize controller otherwise.
+#! See: https://fluxcd.io/flux/components/kustomize/kustomizations/
 
-#@ def source_path():
-#@   return data.values.git.path if data.values.type == "flux-kustomization" else data.values.oci.path
-#@ end
-
-#@ if/end data.values.type in ["flux-kustomization", "flux-oci-kustomization"]:
+#@ if/end data.values.controller == "flux":
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: #@ data.values.name
   namespace: #@ data.values.namespace
-  labels:
-    app.kubernetes.io/component: gitops-configurer
+  labels: #@ labels()
 spec:
-  #@ if/end data.values.service_account != "":
-  serviceAccountName: #@ data.values.service_account
-  interval: #@ data.values.sync_period
+  interval: #@ data.values.interval
   sourceRef:
-    kind: #@ source_kind()
+    kind: #@ flux_source_kind()
     name: #@ data.values.name
   #@ if/end source_path() != "":
   path: #@ source_path()
-  prune: true
-  wait: true
-  timeout: 1m0s
+  #@ if/end data.values.service_account != "":
+  serviceAccountName: #@ data.values.service_account
+  prune: #@ data.values.flux.prune
+  wait: #@ data.values.flux.wait
+  timeout: #@ data.values.flux.timeout

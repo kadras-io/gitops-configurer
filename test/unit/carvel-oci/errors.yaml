@@ -1,0 +1,6 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization

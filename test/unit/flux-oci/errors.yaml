@@ -1,0 +1,6 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+---
+apiVersion: kappctrl.k14s.io/v1alpha1
+kind: App

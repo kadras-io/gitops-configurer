@@ -1,0 +1,5 @@
+source: oci
+oci:
+  url: oci://ghcr.io/kadras-io/my-gitops-artifact
+  path: ./clusters/staging
+  secret_name: registry-credentials

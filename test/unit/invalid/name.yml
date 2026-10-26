@@ -1,0 +1,4 @@
+# expected: a valid DNS subdomain
+name: GitOps_Configurer
+git:
+  url: https://github.com/kadras-io/my-gitops-repo
