@@ -12,4 +12,20 @@ spec:
   packageRef:
     refName: flux.packages.kadras.io
     versionSelection:
-      constraints: 2.9.4
+      constraints: 2.9.6
+  values:
+    - secretRef:
+        name: flux-values
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: flux-values
+  namespace: tests
+stringData:
+  values.yaml: |
+    helm_controller:
+      enabled: false
+    notification_controller:
+      enabled: false
