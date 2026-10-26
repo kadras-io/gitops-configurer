@@ -3,7 +3,7 @@
 apiVersion: kappctrl.k14s.io/v1alpha1
 kind: App
 metadata:
-  name: gitops-configurer
+  name: simple-app
   namespace: tests
 ---
 apiVersion: apps/v1

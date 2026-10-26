@@ -7,6 +7,7 @@ metadata:
 stringData:
   values.yaml: |
     namespace: tests
+    name: simple-app
     controller: carvel
     service_account: kadras-install-sa
     git:
