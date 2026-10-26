@@ -12,7 +12,7 @@ spec:
   packageRef:
     refName: flux.packages.kadras.io
     versionSelection:
-      constraints: 2.9.6
+      constraints: 2.10.0
   values:
     - secretRef:
         name: flux-values
